@@ -1,0 +1,21 @@
+{
+  "name": "lox",
+  "version": "0.0.1",
+  "description": "Lox interpreter",
+  "main": "lox.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/lox.js",
+    "dev": "npx ts-node src/lox.ts"
+  },
+  "bin": {
+    "lox-ts": "dist/lox.js"
+  },
+  "author": "Ayush Gupta",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
