@@ -1,0 +1,5 @@
+{
+  "java.project.sourcePaths": ["lox/src"],
+  "java.project.outputPath": "lox/bin",
+  "java.project.referencedLibraries": ["lib/**/*.jar"]
+}

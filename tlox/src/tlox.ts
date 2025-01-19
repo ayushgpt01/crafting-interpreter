@@ -2,6 +2,8 @@
 import * as fs from "fs";
 import * as readline from "readline";
 
+let hadError: boolean = false;
+
 const reader = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -35,6 +37,10 @@ function run(source: string) {
 function runFile(path: string) {
   const file = readFileAsString(path);
   run(file);
+
+  if (hadError) {
+    process.exit(65);
+  }
 }
 
 async function runPrompt() {
@@ -43,7 +49,17 @@ async function runPrompt() {
     const line = await askQuestion("> ");
     if (!line || line === "exit") break;
     run(line);
+    hadError = false;
   }
+}
+
+function error(line: number, message: string) {
+  report(line, "", message);
+}
+
+function report(line: number, where: string, message: string) {
+  console.log("[line " + line + "] Error" + where + ": " + message);
+  hadError = true;
 }
 
 function main() {

@@ -1,15 +1,15 @@
 {
-  "name": "lox",
+  "name": "tlox",
   "version": "0.0.1",
   "description": "Lox interpreter",
-  "main": "lox.ts",
+  "main": "tlox.ts",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/lox.js",
-    "dev": "npx ts-node src/lox.ts"
+    "start": "node dist/tlox.js",
+    "dev": "npx ts-node src/tlox.ts"
   },
   "bin": {
-    "lox-ts": "dist/lox.js"
+    "tlox-ts": "dist/tlox.js"
   },
   "author": "Ayush Gupta",
   "license": "ISC",

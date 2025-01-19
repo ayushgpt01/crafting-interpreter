@@ -1,6 +1,20 @@
 {
   "configurations": [
     {
+      "type": "java",
+      "name": "Lox",
+      "request": "launch",
+      "mainClass": "com.craftinginterpreters.lox.Lox",
+      "projectName": "crafting-interpreter_89cfe029"
+    },
+    {
+      "type": "java",
+      "name": "App",
+      "request": "launch",
+      "mainClass": "App",
+      "projectName": "crafting-interpreter_89cfe029"
+    },
+    {
       "name": "C/C++: cl.exe build and debug active file",
       "type": "cppvsdbg",
       "request": "launch",
