@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import * as fs from "fs";
 import * as readline from "readline";
+import Scanner from "./Classes/Scanner";
+import Token from "./Classes/Token";
 
 let hadError: boolean = false;
 
@@ -26,8 +28,8 @@ const readFileAsString = (filePath: string): string => {
 };
 
 function run(source: string) {
-  // TODO - Create Scan tokens function
-  const tokens = source.split(" ");
+  const scanner = new Scanner(source);
+  const tokens: Token[] = scanner.scanTokens();
 
   for (let token of tokens) {
     console.log(token);
@@ -53,7 +55,7 @@ async function runPrompt() {
   }
 }
 
-function error(line: number, message: string) {
+export function error(line: number, message: string) {
   report(line, "", message);
 }
 
