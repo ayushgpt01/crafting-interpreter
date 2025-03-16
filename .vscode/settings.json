@@ -1,5 +1,11 @@
 {
   "java.project.sourcePaths": ["lox/src"],
   "java.project.outputPath": "lox/bin",
-  "java.project.referencedLibraries": ["lib/**/*.jar"]
+  "java.project.referencedLibraries": ["lib/**/*.jar"],
+  "files.associations": {
+    "*.ejs": "html",
+    "*.env": "properties",
+    "ostream": "cpp",
+    "iostream": "cpp"
+  }
 }
