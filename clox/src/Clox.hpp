@@ -1,7 +1,7 @@
-#ifndef CLOX_H
-#define CLOX_H
+#ifndef CLOX_HPP
+#define CLOX_HPP
 
-#include<string>
+#include <string>
 
 class CLOX {
   static bool hadError;

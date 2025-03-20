@@ -1,10 +1,10 @@
-#ifndef SCANNER_H
-#define SCANNER_H
+#ifndef SCANNER_HPP
+#define SCANNER_HPP
 
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <Token.h>
+#include <Token.hpp>
 
 class Scanner {
 private:

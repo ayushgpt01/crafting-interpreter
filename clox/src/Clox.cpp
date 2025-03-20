@@ -1,8 +1,8 @@
-#include "Clox.h"
+#include "Clox.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <Scanner.h>
+#include <Scanner.hpp>
 
 bool CLOX::hadError = false;
 

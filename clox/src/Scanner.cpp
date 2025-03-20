@@ -1,5 +1,5 @@
-#include <Scanner.h>
-#include <Clox.h>
+#include <Scanner.hpp>
+#include <Clox.hpp>
 
 const std::unordered_map<std::string, TokenType> Scanner::keywords = {
   {"and",TokenType::AND},

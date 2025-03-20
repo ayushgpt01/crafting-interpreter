@@ -3,7 +3,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <Clox.h>
+#include <Clox.hpp>
 
 int main(int argc, char* argv[]) {
     std::vector<std::string> args(argv, argv + argc);

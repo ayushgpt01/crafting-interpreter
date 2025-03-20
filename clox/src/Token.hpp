@@ -1,7 +1,7 @@
-#ifndef TOKEN_H
-#define TOKEN_H
+#ifndef TOKEN_HPP
+#define TOKEN_HPP
 
-#include <TokenType.h>
+#include <TokenType.hpp>
 #include <string>
 #include <variant>
 

@@ -1,4 +1,4 @@
-#include <Token.h>
+#include <Token.hpp>
 
 Token::Token(TokenType type, std::string lexeme, std::variant<std::monostate, std::string, double> literal, int line)
   : type(type), lexeme(std::move(lexeme)), literal(std::move(literal)), line(line) {
