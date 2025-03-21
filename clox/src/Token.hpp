@@ -6,12 +6,12 @@
 #include <variant>
 
 class Token {
+public:
   const TokenType type;
   const std::string lexeme;
   const std::variant<std::monostate, std::string, double> literal;
   const int line;
 
-public:
   Token(TokenType type, std::string lexeme, std::variant<std::monostate, std::string, double> literal, int line);
   std::string toString() const;
 

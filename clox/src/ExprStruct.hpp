@@ -10,7 +10,12 @@ struct Grouping;
 struct Literal;
 struct Unary;
 
-using Expr = std::variant<std::monostate, Binary, Grouping, Literal, Unary>;
+using BinaryPtr = std::unique_ptr<Binary>;
+using GroupingPtr = std::unique_ptr<Grouping>;
+using LiteralPtr = std::unique_ptr<Literal>;
+using UnaryPtr = std::unique_ptr<Unary>;
+
+using Expr = std::variant<BinaryPtr, GroupingPtr, LiteralPtr, UnaryPtr>;
 
 struct ExprVisitor {
   virtual void visit(const Binary& expr) = 0;
@@ -20,26 +25,26 @@ struct ExprVisitor {
 };
 
 struct Binary {
-  const Expr left;
-  const Token op;
-  const Expr right;
+  Expr left;
+  Token op;
+  Expr right;
 
   Binary(Expr left, Token op, Expr right)
-    : left(std::move(left)), op(op), right(std::move(right)) {
+    : left(std::move(left)), op(std::move(op)), right(std::move(right)) {
   }
 };
 
 struct Unary {
-  const Token op;
-  const Expr right;
+  Token op;
+  Expr right;
 
   Unary(Token op, Expr right)
-    : op(op), right(std::move(right)) {
+    : op(std::move(op)), right(std::move(right)) {
   }
 };
 
 struct Grouping {
-  const Expr expression;
+  Expr expression;
 
   explicit Grouping(Expr expression)
     : expression(std::move(expression)) {
@@ -47,7 +52,7 @@ struct Grouping {
 };
 
 struct Literal {
-  const std::variant<std::monostate, std::string, double> value;
+  std::variant<std::monostate, std::string, double> value;
 
   explicit Literal(std::variant<std::monostate, std::string, double> value)
     : value(std::move(value)) {
