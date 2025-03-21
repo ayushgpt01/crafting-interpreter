@@ -1,5 +1,5 @@
-#ifndef SCANNER_HPP
-#define SCANNER_HPP
+#ifndef CLOX_SCANNER_HPP
+#define CLOX_SCANNER_HPP
 
 #include <string>
 #include <vector>
@@ -20,7 +20,7 @@ private:
   void scanToken();
   char advance();
   void addToken(TokenType);
-  void addToken(TokenType, std::variant<std::monostate, std::string, double>);
+  void addToken(TokenType, LiteralType);
   bool match(char);
   char peek();
   char peekNext();

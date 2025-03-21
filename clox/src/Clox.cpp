@@ -3,6 +3,8 @@
 #include <sstream>
 #include <iostream>
 #include <Scanner.hpp>
+#include <Parser.hpp>
+#include <AstPrinter.hpp>
 
 bool CLOX::hadError = false;
 
@@ -12,10 +14,11 @@ void CLOX::run(std::string source) {
   std::cout << source << std::endl;
   Scanner scanner = Scanner(source);
   std::vector<Token> tokens = scanner.scanTokens();
+  Parser parser = Parser(tokens);
+  std::optional<Expr> expression = parser.parse();
 
-  // For now, just print the tokens.
-  for (Token token : tokens) {
-    std::cout << token.toString() << std::endl;
+  if (expression.has_value()) {
+    std::cout << AstPrinter().print(expression.value()) << std::endl;
   }
 }
 
@@ -55,6 +58,14 @@ void CLOX::runPrompt() {
   }
 }
 
+void CLOX::error(Token token, std::string message) {
+  if (token.type == TokenType::_EOF) {
+    report(token.line, " at end", message);
+  }
+  else {
+    report(token.line, " at '" + token.lexeme + "'", message);
+  }
+}
 
 void CLOX::error(int line, std::string message) {
   report(line, "", message);

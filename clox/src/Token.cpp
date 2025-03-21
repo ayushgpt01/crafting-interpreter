@@ -1,6 +1,6 @@
 #include <Token.hpp>
 
-Token::Token(TokenType type, std::string lexeme, std::variant<std::monostate, std::string, double> literal, int line)
+Token::Token(TokenType type, std::string lexeme, LiteralType literal, int line)
   : type(type), lexeme(std::move(lexeme)), literal(std::move(literal)), line(line) {
 }
 
@@ -40,5 +40,8 @@ std::string Token::literalToString() const {
   else if (std::holds_alternative<double>(literal)) {
     return std::to_string(std::get<double>(literal));
   }
-  return "null";
+  else if (std::holds_alternative<bool>(literal)) {
+    return std::to_string(std::get<bool>(literal));
+  }
+  return "nil";
 }

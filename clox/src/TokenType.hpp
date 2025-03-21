@@ -1,5 +1,5 @@
-#ifndef TOKEN_TYPE_HPP
-#define TOKEN_TYPE_HPP
+#ifndef CLOX_TOKEN_TYPE_HPP
+#define CLOX_TOKEN_TYPE_HPP
 
 enum class TokenType {
   // Single-character tokens.

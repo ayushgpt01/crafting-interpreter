@@ -1,15 +1,22 @@
-#ifndef PARSER_HPP
-#define PARSER_HPP
+#ifndef CLOX_PARSER_HPP
+#define CLOX_PARSER_HPP
 
 #include <vector>
 #include <initializer_list>
 #include <functional>
-#include <Token.hpp>
+#include <stdexcept>
+#include <optional>
+#include <CLOX.hpp>
 #include <ExprStruct.hpp>
 
 class Parser {
   std::vector<Token> tokens;
   int current;
+
+  class ParseError : public std::runtime_error {
+  public:
+    ParseError(const std::string& message) : std::runtime_error(message) {};
+  };
 
   Expr expression();
   Expr equality();
@@ -19,16 +26,20 @@ class Parser {
   Expr unary();
   Expr primary();
 
-  Expr parse(std::initializer_list<TokenType>, std::function<Expr()>);
+  Expr resolve(std::initializer_list<TokenType>, std::function<Expr()>);
+  Token consume(TokenType, std::string);
+  ParseError error(Token, std::string);
+  void synchronize();
+
   bool match(std::initializer_list<TokenType>);
   bool check(TokenType);
   bool isAtEnd();
-
   Token advance();
   Token peek();
   Token previous();
 
 public:
+  std::optional<Expr> parse();
   Parser(std::vector<Token> tokens);
 };
 
