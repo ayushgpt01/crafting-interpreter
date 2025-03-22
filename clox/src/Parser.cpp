@@ -98,13 +98,34 @@ void Parser::synchronize() {
   }
 }
 
-std::optional<Expr> Parser::parse() {
-  try {
-    return expression();
+std::vector<Stmt> Parser::parse() {
+  std::vector<Stmt> statements = std::vector<Stmt>();
+
+  while (!isAtEnd()) {
+    statements.push_back(statement());
   }
-  catch (const ParseError& e) {
-    return std::nullopt;
-  }
+
+  return statements;
+}
+
+Stmt Parser::statement() {
+  if (match({ TokenType::PRINT })) return printStatement();
+
+  return expressionStatement();
+}
+
+Stmt Parser::printStatement() {
+  Expr expr = expression();
+  consume(TokenType::SEMICOLON, "Expect ';' after value.");
+
+  return PrintPtr(std::make_unique<Print>(Print(std::move(expr))));
+}
+
+Stmt Parser::expressionStatement() {
+  Expr expr = expression();
+  consume(TokenType::SEMICOLON, "Expect ';' after expression.");
+
+  return ExpressionPtr(std::make_unique<Expression>(Expression(std::move(expr))));
 }
 
 bool Parser::match(std::initializer_list<TokenType> tokens) {

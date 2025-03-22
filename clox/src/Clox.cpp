@@ -2,7 +2,7 @@
 
 bool CLOX::hadError = false;
 bool CLOX::hadRuntimeError = false;
-const Interpreter CLOX::interpreter = Interpreter();
+Interpreter CLOX::interpreter;
 
 CLOX::CLOX() {}
 
@@ -11,11 +11,11 @@ void CLOX::run(std::string source) {
   Scanner scanner = Scanner(source);
   std::vector<Token> tokens = scanner.scanTokens();
   Parser parser = Parser(tokens);
-  std::optional<Expr> expression = parser.parse();
+  std::vector<Stmt> statements = parser.parse();
 
-  if (expression.has_value()) {
-    std::cout << AstPrinter().print(expression.value()) << std::endl;
-  }
+  if (hadError) return;
+
+  interpreter.interpret(std::move(statements));
 }
 
 

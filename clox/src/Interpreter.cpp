@@ -1,4 +1,5 @@
 #include "Interpreter.hpp"
+#include <Clox.hpp>
 
 LiteralType Interpreter::visitBinaryExpr(BinaryPtr expr) noexcept(false) {
   LiteralType right = evaluate(std::move(expr->right));
@@ -67,19 +68,28 @@ LiteralType Interpreter::visitLiteralExpr(LiteralPtr expr) {
   return expr->value;
 }
 
+void Interpreter::visitExpressionStmt(ExpressionPtr expr) {
+  evaluate(std::move(expr->expression));
+}
+
+void Interpreter::visitPrintStmt(PrintPtr expr) {
+  LiteralType value = evaluate(std::move(expr->expression));
+  std::cout << stringify(value) << std::endl;
+}
+
 LiteralType Interpreter::evaluate(Expr expr) {
-  return std::visit([](const auto& x) -> LiteralType {
-    if constexpr (std::is_same_v<std::decay_t<decltype(x)>, BinaryPtr >> ) {
-      return visitBinaryExpr(x);
+  return std::visit([this](auto& x) -> LiteralType {
+    if constexpr (std::is_same_v<std::decay_t<decltype(x)>, BinaryPtr >) {
+      return this->visitBinaryExpr(std::move(x));
     }
-    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, UnaryPtr >> ) {
-      return visitUnaryExpr(x);
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, UnaryPtr >) {
+      return this->visitUnaryExpr(std::move(x));
     }
-    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, GroupingPtr >> ) {
-      return visitGroupingExpr(x);
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, GroupingPtr >) {
+      return this->visitGroupingExpr(std::move(x));
     }
-    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, LiteralPtr >> ) {
-      return visitLiteralExpr(x);
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, LiteralPtr >) {
+      return this->visitLiteralExpr(std::move(x));
     }
 
     return std::monostate{};
@@ -137,12 +147,24 @@ std::string Interpreter::stringify(LiteralType literal) {
   return std::to_string(std::get<double>(literal));
 }
 
-void Interpreter::interpret(Expr expr) {
+void Interpreter::interpret(std::vector<Stmt> statements) {
   try {
-    LiteralType value = evaluate(std::move(expr));
-    std::cout << stringify(value) << std::endl;
+    for (Stmt& statement : statements) {
+      execute(std::move(statement));
+    }
   }
   catch (const RuntimeError& e) {
     CLOX::runtimeError(e);
   }
+}
+
+void Interpreter::execute(Stmt&& statement) {
+  std::visit([this](auto& x) -> void {
+    if constexpr (std::is_same_v<std::decay_t<decltype(x)>, ExpressionPtr>) {
+      this->visitExpressionStmt(std::move(x));
+    }
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, PrintPtr>) {
+      this->visitPrintStmt(std::move(x));
+    }
+    }, std::move(statement));
 }

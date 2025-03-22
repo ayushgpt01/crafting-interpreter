@@ -11,11 +11,12 @@
 #include <AstPrinter.hpp>
 #include <RuntimeError.hpp>
 #include <Interpreter.hpp>
+#include <StmtStruct.hpp>
 
 class CLOX {
   static bool hadError;
   static bool hadRuntimeError;
-  static const Interpreter interpreter;
+  static Interpreter interpreter;
 
 public:
   CLOX();

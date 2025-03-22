@@ -8,6 +8,7 @@
 #include <optional>
 #include <CLOX.hpp>
 #include <ExprStruct.hpp>
+#include <StmtStruct.hpp>
 
 class Parser {
   std::vector<Token> tokens;
@@ -38,8 +39,12 @@ class Parser {
   Token peek();
   Token previous();
 
+  Stmt statement();
+  Stmt printStatement();
+  Stmt expressionStatement();
+
 public:
-  std::optional<Expr> parse();
+  std::vector<Stmt> parse();
   Parser(std::vector<Token> tokens);
 };
 
