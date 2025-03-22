@@ -27,7 +27,7 @@ class Parser {
   Expr primary();
 
   Expr resolve(std::initializer_list<TokenType>, std::function<Expr()>);
-  Token consume(TokenType, std::string);
+  Token consume(TokenType, std::string) noexcept(false);
   ParseError error(Token, std::string);
   void synchronize();
 

@@ -1,6 +1,6 @@
 #include <AstPrinter.hpp>
 
-std::string AstPrinter::parenthesize(const std::string& name, const std::vector<Expr*>& expressions) {
+std::string AstPrinter::parenthesize(const std::string& name, const std::array<Expr*, 2>& expressions) {
   std::string result = "(" + name;
   for (const Expr* expr : expressions) {
     result += " " + print(*expr);

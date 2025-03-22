@@ -64,7 +64,7 @@ Expr Parser::primary() {
   throw error(peek(), "Expect expression.");
 }
 
-Token Parser::consume(TokenType type, std::string message) {
+Token Parser::consume(TokenType type, std::string message) noexcept(false) {
   if (check(type)) return advance();
 
   throw error(peek(), message);

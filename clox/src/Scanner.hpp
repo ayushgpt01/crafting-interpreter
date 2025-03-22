@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <Token.hpp>
+#include <Clox.hpp>
 
 class Scanner {
 private:

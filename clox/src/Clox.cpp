@@ -1,12 +1,8 @@
 #include "Clox.hpp"
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <Scanner.hpp>
-#include <Parser.hpp>
-#include <AstPrinter.hpp>
 
 bool CLOX::hadError = false;
+bool CLOX::hadRuntimeError = false;
+const Interpreter CLOX::interpreter = Interpreter();
 
 CLOX::CLOX() {}
 
@@ -36,9 +32,8 @@ int CLOX::runFile(std::string filePath) {
 
   run(buffer.str());
 
-  if (hadError) {
-    exit(65);
-  }
+  if (hadError) exit(65);
+  if (hadRuntimeError) exit(70);
 
   return 0;
 }
@@ -74,4 +69,9 @@ void CLOX::error(int line, std::string message) {
 void CLOX::report(int line, std::string where, std::string message) {
   std::cout << "[line " << line << "] Error" << where << ": " << message << std::endl;
   hadError = true;
+}
+
+void CLOX::runtimeError(RuntimeError error) {
+  std::cout << error.what() << "\n[line " << error.token.line << "]" << std::endl;
+  hadRuntimeError = true;
 }
