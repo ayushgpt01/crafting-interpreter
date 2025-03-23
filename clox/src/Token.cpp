@@ -32,7 +32,6 @@ std::string Token::tokenTypeToString() const {
   }
 }
 
-
 std::string Token::literalToString() const {
   if (std::holds_alternative<std::string>(literal)) {
     return std::get<std::string>(literal);

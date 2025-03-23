@@ -180,7 +180,7 @@ void Interpreter::visitPrintStmt(PrintPtr stmt) {
 
 void Interpreter::visitVarStmt(VarPtr stmt) {
   LiteralType value = std::monostate{};
-  if (std::holds_alternative<std::monostate>(stmt->initializer)) {
+  if (!std::holds_alternative<std::monostate>(stmt->initializer)) {
     value = evaluate(std::move(stmt->initializer));
   }
 
