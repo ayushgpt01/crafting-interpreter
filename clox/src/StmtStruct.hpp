@@ -6,13 +6,14 @@
 struct Expression;
 struct Print;
 struct Var;
+struct Block;
 
 using ExpressionPtr = std::unique_ptr<Expression>;
 using PrintPtr = std::unique_ptr<Print>;
 using VarPtr = std::unique_ptr<Var>;
-using VarPtr = std::unique_ptr<Var>;
+using BlockPtr = std::unique_ptr<Block>;
 
-using Stmt = std::variant<std::monostate, ExpressionPtr, PrintPtr, VarPtr>;
+using Stmt = std::variant<std::monostate, ExpressionPtr, PrintPtr, VarPtr, BlockPtr>;
 
 struct Expression {
   Expr expression;
@@ -33,6 +34,12 @@ struct Print {
   Expr expression;
 
   explicit Print(Expr expression) : expression(std::move(expression)) {};
+};
+
+struct Block {
+  std::vector<Stmt> statements;
+
+  explicit Block(std::vector<Stmt> statements) : statements(std::move(statements)) {};
 };
 
 #endif

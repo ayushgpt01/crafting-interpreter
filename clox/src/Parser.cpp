@@ -156,9 +156,12 @@ Stmt Parser::varDeclaration() {
 
 Stmt Parser::statement() {
   if (match({ TokenType::PRINT })) return printStatement();
+  if (match({ TokenType::LEFT_BRACE })) return BlockPtr(std::make_unique<Block>(Block(std::move(block()))));
 
   return expressionStatement();
 }
+
+
 
 Stmt Parser::printStatement() {
   Expr expr = expression();
@@ -172,6 +175,17 @@ Stmt Parser::expressionStatement() {
   consume(TokenType::SEMICOLON, "Expect ';' after expression.");
 
   return ExpressionPtr(std::make_unique<Expression>(Expression(std::move(expr))));
+}
+
+std::vector<Stmt> Parser::block() {
+  std::vector<Stmt> statements = std::vector<Stmt>();
+
+  while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
+    statements.push_back(declaration());
+  }
+
+  consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");
+  return statements;
 }
 
 bool Parser::match(std::initializer_list<TokenType> tokens) {

@@ -2,7 +2,7 @@
 #include <Clox.hpp>
 
 Interpreter::Interpreter() {
-  environment = Environment();
+  environment = std::make_unique<Environment>();
 }
 
 LiteralType Interpreter::visitBinaryExpr(BinaryPtr expr) noexcept(false) {
@@ -73,12 +73,12 @@ LiteralType Interpreter::visitLiteralExpr(LiteralPtr expr) {
 }
 
 LiteralType Interpreter::visitVariableExpr(VariablePtr expr) {
-  return environment.get(expr->name);
+  return environment->get(expr->name);
 }
 
 LiteralType Interpreter::visitAssignExpr(AssignPtr expr) {
   LiteralType value = evaluate(std::move(expr->value));
-  environment.assign(expr->name, value);
+  environment->assign(expr->name, value);
   return value;
 }
 
@@ -184,7 +184,11 @@ void Interpreter::visitVarStmt(VarPtr stmt) {
     value = evaluate(std::move(stmt->initializer));
   }
 
-  environment.define(stmt->name.lexeme, value);
+  environment->define(stmt->name.lexeme, value);
+}
+
+void Interpreter::visitBlockStmt(BlockPtr stmt) {
+  executeBlock(stmt->statements, std::make_unique<Environment>(std::move(environment)));
 }
 
 void Interpreter::execute(Stmt&& statement) {
@@ -198,5 +202,21 @@ void Interpreter::execute(Stmt&& statement) {
     else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, VarPtr>) {
       this->visitVarStmt(std::move(x));
     }
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, BlockPtr>) {
+      this->visitBlockStmt(std::move(x));
+    }
     }, std::move(statement));
+}
+
+void Interpreter::executeBlock(std::vector<Stmt>& statements, std::unique_ptr<Environment> environment) {
+  std::unique_ptr<Environment> previous = std::move(this->environment);
+  try {
+    this->environment = std::move(environment);
+    for (Stmt& statement : statements) {
+      execute(std::move(statement));
+    }
+  }
+  catch (const std::exception& ex) {}
+
+  this->environment = std::move(previous);
 }

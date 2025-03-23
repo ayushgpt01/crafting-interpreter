@@ -7,7 +7,7 @@
 
 class Interpreter {
 private:
-  Environment environment;
+  std::unique_ptr<Environment> environment;
   LiteralType visitBinaryExpr(BinaryPtr) noexcept(false);
   LiteralType visitUnaryExpr(UnaryPtr);
   LiteralType visitGroupingExpr(GroupingPtr);
@@ -18,6 +18,7 @@ private:
   void visitExpressionStmt(ExpressionPtr);
   void visitPrintStmt(PrintPtr);
   void visitVarStmt(VarPtr);
+  void visitBlockStmt(BlockPtr);
 
   LiteralType evaluate(Expr);
   void checkNumberOperand(Token, LiteralType) noexcept(false);
@@ -27,6 +28,7 @@ private:
   bool isTruthy(LiteralType);
   std::string stringify(LiteralType);
   void execute(Stmt&&);
+  void executeBlock(std::vector<Stmt>&, std::unique_ptr<Environment>);
 
 public:
   // Interprets a vector of statements, taking ownership by moving them.
