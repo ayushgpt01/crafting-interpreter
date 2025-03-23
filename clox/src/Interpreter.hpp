@@ -3,14 +3,21 @@
 
 #include <vector>
 #include <StmtStruct.hpp>
+#include <Environment.hpp>
 
 class Interpreter {
-  LiteralType visitBinaryExpr(BinaryPtr expr) noexcept(false);
-  LiteralType visitUnaryExpr(UnaryPtr expr);
-  LiteralType visitGroupingExpr(GroupingPtr expr);
-  LiteralType visitLiteralExpr(LiteralPtr expr);
-  void visitExpressionStmt(ExpressionPtr expr);
-  void visitPrintStmt(PrintPtr expr);
+private:
+  Environment environment;
+  LiteralType visitBinaryExpr(BinaryPtr) noexcept(false);
+  LiteralType visitUnaryExpr(UnaryPtr);
+  LiteralType visitGroupingExpr(GroupingPtr);
+  LiteralType visitLiteralExpr(LiteralPtr);
+  LiteralType visitVariableExpr(VariablePtr);
+  LiteralType visitAssignExpr(AssignPtr);
+
+  void visitExpressionStmt(ExpressionPtr);
+  void visitPrintStmt(PrintPtr);
+  void visitVarStmt(VarPtr);
 
   LiteralType evaluate(Expr);
   void checkNumberOperand(Token, LiteralType) noexcept(false);
@@ -28,6 +35,7 @@ public:
   // will be empty (moved-from state). Passing without std::move will fail to
   // compile because Stmt contains non-copyable std::unique_ptrs.
   void interpret(std::vector<Stmt>);
+  Interpreter();
 };
 
 #endif

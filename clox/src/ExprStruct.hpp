@@ -9,13 +9,17 @@ struct Binary;
 struct Grouping;
 struct Literal;
 struct Unary;
+struct Variable;
+struct Assign;
 
 using BinaryPtr = std::unique_ptr<Binary>;
 using GroupingPtr = std::unique_ptr<Grouping>;
 using LiteralPtr = std::unique_ptr<Literal>;
 using UnaryPtr = std::unique_ptr<Unary>;
+using VariablePtr = std::unique_ptr<Variable>;
+using AssignPtr = std::unique_ptr<Assign>;
 
-using Expr = std::variant<BinaryPtr, GroupingPtr, LiteralPtr, UnaryPtr>;
+using Expr = std::variant<std::monostate, BinaryPtr, GroupingPtr, LiteralPtr, UnaryPtr, VariablePtr, AssignPtr>;
 
 struct Binary {
   Expr left;
@@ -51,5 +55,23 @@ struct Literal {
     : value(std::move(value)) {
   }
 };
+
+struct Variable {
+  Token name;
+
+  explicit Variable(Token name)
+    : name(std::move(name)) {
+  }
+};
+
+struct Assign {
+  Token name;
+  Expr value;
+
+  Assign(Token name, Expr value)
+    : name(std::move(name)), value(std::move(value)) {
+  }
+};
+
 
 #endif

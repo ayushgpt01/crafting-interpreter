@@ -5,7 +5,25 @@ Parser::Parser(std::vector<Token> tokens) : tokens(tokens) {
 };
 
 Expr Parser::expression() {
-  return equality();
+  return assignment();
+}
+
+Expr Parser::assignment() {
+  Expr expr = equality();
+
+  if (match({ TokenType::EQUAL })) {
+    Token equals = previous();
+    Expr value = assignment();
+
+    if (std::holds_alternative<VariablePtr>(expr)) {
+      Token name = std::get<VariablePtr>(expr)->name;
+      return AssignPtr(std::make_unique<Assign>(Assign(name, std::move(value))));
+    }
+
+    error(equals, "Invalid assignment value.");
+  }
+
+  return expr;
 }
 
 Expr Parser::resolve(std::initializer_list<TokenType> tokens, std::function<Expr()> func) {
@@ -61,6 +79,10 @@ Expr Parser::primary() {
     return GroupingPtr(std::make_unique<Grouping>(std::move(expr)));
   }
 
+  if (match({ TokenType::IDENTIFIER })) {
+    return VariablePtr(std::make_unique<Variable>(Variable(previous())));
+  }
+
   throw error(peek(), "Expect expression.");
 }
 
@@ -102,10 +124,34 @@ std::vector<Stmt> Parser::parse() {
   std::vector<Stmt> statements = std::vector<Stmt>();
 
   while (!isAtEnd()) {
-    statements.push_back(statement());
+    statements.push_back(declaration());
   }
 
   return statements;
+}
+
+Stmt Parser::declaration() {
+  try {
+    if (match({ TokenType::VAR })) return varDeclaration();
+
+    return statement();
+  }
+  catch (const ParseError& error) {
+    synchronize();
+    return std::monostate{};
+  }
+}
+
+Stmt Parser::varDeclaration() {
+  Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
+
+  Expr initializer = std::monostate{};
+  if (match({ TokenType::EQUAL })) {
+    initializer = expression();
+  }
+
+  consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
+  return VarPtr(std::make_unique<Var>(Var(name, std::move(initializer))));
 }
 
 Stmt Parser::statement() {

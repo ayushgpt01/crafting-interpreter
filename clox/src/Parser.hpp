@@ -19,6 +19,7 @@ class Parser {
     ParseError(const std::string& message) : std::runtime_error(message) {};
   };
 
+  Expr assignment();
   Expr expression();
   Expr equality();
   Expr comparison();
@@ -42,6 +43,9 @@ class Parser {
   Stmt statement();
   Stmt printStatement();
   Stmt expressionStatement();
+  Stmt declaration();
+  Stmt varDeclaration();
+
 
 public:
   std::vector<Stmt> parse();

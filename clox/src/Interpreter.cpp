@@ -1,6 +1,10 @@
 #include "Interpreter.hpp"
 #include <Clox.hpp>
 
+Interpreter::Interpreter() {
+  environment = Environment();
+}
+
 LiteralType Interpreter::visitBinaryExpr(BinaryPtr expr) noexcept(false) {
   LiteralType right = evaluate(std::move(expr->right));
   LiteralType left = evaluate(std::move(expr->left));
@@ -68,13 +72,14 @@ LiteralType Interpreter::visitLiteralExpr(LiteralPtr expr) {
   return expr->value;
 }
 
-void Interpreter::visitExpressionStmt(ExpressionPtr expr) {
-  evaluate(std::move(expr->expression));
+LiteralType Interpreter::visitVariableExpr(VariablePtr expr) {
+  return environment.get(expr->name);
 }
 
-void Interpreter::visitPrintStmt(PrintPtr expr) {
-  LiteralType value = evaluate(std::move(expr->expression));
-  std::cout << stringify(value) << std::endl;
+LiteralType Interpreter::visitAssignExpr(AssignPtr expr) {
+  LiteralType value = evaluate(std::move(expr->value));
+  environment.assign(expr->name, value);
+  return value;
 }
 
 LiteralType Interpreter::evaluate(Expr expr) {
@@ -90,6 +95,12 @@ LiteralType Interpreter::evaluate(Expr expr) {
     }
     else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, LiteralPtr >) {
       return this->visitLiteralExpr(std::move(x));
+    }
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, VariablePtr >) {
+      return this->visitVariableExpr(std::move(x));
+    }
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, AssignPtr >) {
+      return this->visitAssignExpr(std::move(x));
     }
 
     return std::monostate{};
@@ -158,6 +169,24 @@ void Interpreter::interpret(std::vector<Stmt> statements) {
   }
 }
 
+void Interpreter::visitExpressionStmt(ExpressionPtr stmt) {
+  evaluate(std::move(stmt->expression));
+}
+
+void Interpreter::visitPrintStmt(PrintPtr stmt) {
+  LiteralType value = evaluate(std::move(stmt->expression));
+  std::cout << stringify(value) << std::endl;
+}
+
+void Interpreter::visitVarStmt(VarPtr stmt) {
+  LiteralType value = std::monostate{};
+  if (std::holds_alternative<std::monostate>(stmt->initializer)) {
+    value = evaluate(std::move(stmt->initializer));
+  }
+
+  environment.define(stmt->name.lexeme, value);
+}
+
 void Interpreter::execute(Stmt&& statement) {
   std::visit([this](auto& x) -> void {
     if constexpr (std::is_same_v<std::decay_t<decltype(x)>, ExpressionPtr>) {
@@ -165,6 +194,9 @@ void Interpreter::execute(Stmt&& statement) {
     }
     else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, PrintPtr>) {
       this->visitPrintStmt(std::move(x));
+    }
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, VarPtr>) {
+      this->visitVarStmt(std::move(x));
     }
     }, std::move(statement));
 }
