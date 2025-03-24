@@ -27,6 +27,8 @@ class Parser {
   Expr factor();
   Expr unary();
   Expr primary();
+  Expr or ();
+  Expr and ();
 
   Expr resolve(std::initializer_list<TokenType>, std::function<Expr()>);
   Token consume(TokenType, std::string) noexcept(false);
@@ -43,6 +45,7 @@ class Parser {
   Stmt statement();
   Stmt printStatement();
   Stmt expressionStatement();
+  Stmt ifStatement();
   std::vector<Stmt> block();
 
   Stmt declaration();

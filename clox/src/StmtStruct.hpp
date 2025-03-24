@@ -7,13 +7,15 @@ struct Expression;
 struct Print;
 struct Var;
 struct Block;
+struct If;
 
 using ExpressionPtr = std::unique_ptr<Expression>;
 using PrintPtr = std::unique_ptr<Print>;
 using VarPtr = std::unique_ptr<Var>;
 using BlockPtr = std::unique_ptr<Block>;
+using IfPtr = std::unique_ptr<If>;
 
-using Stmt = std::variant<std::monostate, ExpressionPtr, PrintPtr, VarPtr, BlockPtr>;
+using Stmt = std::variant<std::monostate, ExpressionPtr, PrintPtr, VarPtr, BlockPtr, IfPtr>;
 
 struct Expression {
   Expr expression;
@@ -40,6 +42,18 @@ struct Block {
   std::vector<Stmt> statements;
 
   explicit Block(std::vector<Stmt> statements) : statements(std::move(statements)) {};
+};
+
+struct If {
+  Expr condition;
+  Stmt thenBranch;
+  Stmt elseBranch;
+
+  If(Expr condition, Stmt thenBranch, Stmt elseBranch)
+    : condition(std::move(condition)),
+    thenBranch(std::move(thenBranch)),
+    elseBranch(std::move(elseBranch)) {
+  };
 };
 
 #endif

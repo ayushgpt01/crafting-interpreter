@@ -82,6 +82,19 @@ LiteralType Interpreter::visitAssignExpr(AssignPtr expr) {
   return value;
 }
 
+LiteralType Interpreter::visitLogicalExpr(LogicalPtr expr) {
+  LiteralType left = evaluate(std::move(expr->left));
+
+  if (expr->op.type == TokenType::OR) {
+    if (isTruthy(left)) return left;
+  }
+  else {
+    if (!isTruthy(left)) return left;
+  }
+
+  return evaluate(std::move(expr->right));
+}
+
 LiteralType Interpreter::evaluate(Expr expr) {
   return std::visit([this](auto& x) -> LiteralType {
     if constexpr (std::is_same_v<std::decay_t<decltype(x)>, BinaryPtr >) {
@@ -101,6 +114,9 @@ LiteralType Interpreter::evaluate(Expr expr) {
     }
     else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, AssignPtr >) {
       return this->visitAssignExpr(std::move(x));
+    }
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, LogicalPtr >) {
+      return this->visitLogicalExpr(std::move(x));
     }
 
     return std::monostate{};
@@ -191,6 +207,15 @@ void Interpreter::visitBlockStmt(BlockPtr stmt) {
   executeBlock(stmt->statements, std::make_unique<Environment>(std::move(environment)));
 }
 
+void Interpreter::visitIfStmt(IfPtr stmt) {
+  if (isTruthy(evaluate(std::move(stmt->condition)))) {
+    execute(std::move(stmt->thenBranch));
+  }
+  else if (!std::holds_alternative<std::monostate>(stmt->elseBranch)) {
+    execute(std::move(stmt->elseBranch));
+  }
+}
+
 void Interpreter::execute(Stmt&& statement) {
   std::visit([this](auto& x) -> void {
     if constexpr (std::is_same_v<std::decay_t<decltype(x)>, ExpressionPtr>) {
@@ -204,6 +229,9 @@ void Interpreter::execute(Stmt&& statement) {
     }
     else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, BlockPtr>) {
       this->visitBlockStmt(std::move(x));
+    }
+    else if constexpr (std::is_same_v<std::decay_t<decltype(x)>, IfPtr>) {
+      this->visitIfStmt(std::move(x));
     }
     }, std::move(statement));
 }

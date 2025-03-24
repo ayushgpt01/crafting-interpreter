@@ -14,11 +14,13 @@ private:
   LiteralType visitLiteralExpr(LiteralPtr);
   LiteralType visitVariableExpr(VariablePtr);
   LiteralType visitAssignExpr(AssignPtr);
+  LiteralType visitLogicalExpr(LogicalPtr);
 
   void visitExpressionStmt(ExpressionPtr);
   void visitPrintStmt(PrintPtr);
   void visitVarStmt(VarPtr);
   void visitBlockStmt(BlockPtr);
+  void visitIfStmt(IfPtr);
 
   LiteralType evaluate(Expr);
   void checkNumberOperand(Token, LiteralType) noexcept(false);
